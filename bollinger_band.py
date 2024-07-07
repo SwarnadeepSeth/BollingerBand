@@ -24,10 +24,18 @@ def calculate_bollinger_bands(df, window=20):
 
 # Calculate MACD
 def calculate_macd(df, short_window=12, long_window=26, signal_window=9):
+    # Calculate the Short EMA
     df['Short EMA'] = df['Close'].ewm(span=short_window, adjust=False).mean()
+    
+    # Calculate the Long EMA
     df['Long EMA'] = df['Close'].ewm(span=long_window, adjust=False).mean()
+    
+    # Calculate the MACD Line
     df['MACD'] = df['Short EMA'] - df['Long EMA']
+    
+    # Calculate the Signal Line
     df['Signal Line'] = df['MACD'].ewm(span=signal_window, adjust=False).mean()
+    
     return df
 
 # Function to check relative strength
@@ -105,6 +113,10 @@ if uploaded_file is not None:
 
                     ax[1].plot(stock_data.index, stock_data['MACD'], label='MACD', color='red')
                     ax[1].plot(stock_data.index, stock_data['Signal Line'], label='Signal Line', color='green')
+                    # Add histogram for MACD color based on positive or negative
+                    color = ['green' if x > 0 else 'red' for x in stock_data['MACD'] - stock_data['Signal Line']]
+                    ax[1].bar(stock_data.index, stock_data['MACD'] - stock_data['Signal Line'], width=0.6, color=color)
+            
                     # Add zero line
                     ax[1].axhline(y=0, color='grey', linestyle='--')
                     ax[1].legend(loc='upper left', frameon = False)
