@@ -1,0 +1,2 @@
+# BollingerBand
+BollingerBand Scanner
